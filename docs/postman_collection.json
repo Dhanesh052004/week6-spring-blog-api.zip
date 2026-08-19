@@ -1,0 +1,250 @@
+{
+  "info": {
+    "name": "Blog Management REST API",
+    "description": "Postman collection covering all endpoints of the Blog Management REST API (Posts, Categories, Comments).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "categoryId", "value": "1" },
+    { "key": "postId", "value": "1" },
+    { "key": "commentId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/categories"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "body": "[\n  {\n    \"id\": 1,\n    \"name\": \"Technology\",\n    \"description\": \"Posts about technology trends\",\n    \"postCount\": 2\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Category By Id",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/categories/{{categoryId}}"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "body": "{\n  \"id\": 1,\n  \"name\": \"Technology\",\n  \"description\": \"Posts about technology trends\",\n  \"postCount\": 2\n}"
+            },
+            {
+              "name": "404 Not Found",
+              "body": "{\n  \"status\": 404,\n  \"error\": \"Not Found\",\n  \"message\": \"Category not found with id: 999\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/categories",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Technology\",\n  \"description\": \"Posts about technology trends\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "body": "{\n  \"id\": 1,\n  \"name\": \"Technology\",\n  \"description\": \"Posts about technology trends\",\n  \"postCount\": 0\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/categories/{{categoryId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Technology & Innovation\",\n  \"description\": \"Updated description\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/categories/{{categoryId}}"
+          },
+          "response": [
+            { "name": "204 No Content", "body": "" },
+            {
+              "name": "400 Bad Request (has posts)",
+              "body": "{\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Cannot delete category id=1 because it still has associated posts\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Posts",
+      "item": [
+        {
+          "name": "Get All Posts (Paginated)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/posts?page=0&size=10&sort=createdAt,desc"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "body": "{\n  \"content\": [\n    {\n      \"id\": 1,\n      \"title\": \"Getting Started with Spring Boot\",\n      \"content\": \"Spring Boot makes backend development easier...\",\n      \"author\": \"John Doe\",\n      \"categoryId\": 1,\n      \"categoryName\": \"Technology\",\n      \"createdAt\": \"2026-08-19T10:30:00\",\n      \"updatedAt\": \"2026-08-19T10:30:00\",\n      \"commentCount\": 2\n    }\n  ],\n  \"totalElements\": 5,\n  \"totalPages\": 1,\n  \"size\": 10,\n  \"number\": 0,\n  \"first\": true,\n  \"last\": true\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Post By Id",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/posts/{{postId}}"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "body": "{\n  \"id\": 1,\n  \"title\": \"Getting Started with Spring Boot\",\n  \"content\": \"Spring Boot makes backend development easier...\",\n  \"author\": \"John Doe\",\n  \"categoryId\": 1,\n  \"categoryName\": \"Technology\",\n  \"createdAt\": \"2026-08-19T10:30:00\",\n  \"updatedAt\": \"2026-08-19T10:30:00\",\n  \"commentCount\": 2\n}"
+            },
+            {
+              "name": "404 Not Found",
+              "body": "{\n  \"status\": 404,\n  \"error\": \"Not Found\",\n  \"message\": \"Post not found with id: 999\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Posts By Category",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/posts/category/{{categoryId}}?page=0&size=10"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Posts By Author",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/posts/author/John Doe?page=0&size=10"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Post",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/posts",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Getting Started with Spring Boot\",\n  \"content\": \"Spring Boot makes backend development easier...\",\n  \"author\": \"John Doe\",\n  \"categoryId\": 1\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "body": "{\n  \"id\": 1,\n  \"title\": \"Getting Started with Spring Boot\",\n  \"content\": \"Spring Boot makes backend development easier...\",\n  \"author\": \"John Doe\",\n  \"categoryId\": 1,\n  \"categoryName\": \"Technology\",\n  \"createdAt\": \"2026-08-19T10:30:00\",\n  \"updatedAt\": \"2026-08-19T10:30:00\",\n  \"commentCount\": 0\n}"
+            },
+            {
+              "name": "400 Validation Error",
+              "body": "{\n  \"status\": 400,\n  \"error\": \"Bad Request\",\n  \"message\": \"Validation failed for one or more fields\",\n  \"validationErrors\": {\n    \"title\": \"Title must not be blank\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Post",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/posts/{{postId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Getting Started with Spring Boot (Updated)\",\n  \"content\": \"Updated content...\",\n  \"author\": \"John Doe\",\n  \"categoryId\": 1\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Post",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/posts/{{postId}}"
+          },
+          "response": [{ "name": "204 No Content", "body": "" }]
+        }
+      ]
+    },
+    {
+      "name": "Comments",
+      "item": [
+        {
+          "name": "Get Comments For Post",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/posts/{{postId}}/comments?page=0&size=10"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "body": "{\n  \"content\": [\n    {\n      \"id\": 1,\n      \"content\": \"Great article, very helpful!\",\n      \"author\": \"Jane Smith\",\n      \"postId\": 1,\n      \"createdAt\": \"2026-08-19T11:00:00\"\n    }\n  ],\n  \"totalElements\": 1\n}"
+            }
+          ]
+        },
+        {
+          "name": "Add Comment To Post",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/posts/{{postId}}/comments",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Great article, very helpful!\",\n  \"author\": \"Jane Smith\"\n}"
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "body": "{\n  \"id\": 1,\n  \"content\": \"Great article, very helpful!\",\n  \"author\": \"Jane Smith\",\n  \"postId\": 1,\n  \"createdAt\": \"2026-08-19T11:00:00\"\n}"
+            },
+            {
+              "name": "404 Post Not Found",
+              "body": "{\n  \"status\": 404,\n  \"error\": \"Not Found\",\n  \"message\": \"Post not found with id: 999\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Comment",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/comments/{{commentId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Updated comment text\",\n  \"author\": \"Jane Smith\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Comment",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/comments/{{commentId}}"
+          },
+          "response": [{ "name": "204 No Content", "body": "" }]
+        }
+      ]
+    }
+  ]
+}
